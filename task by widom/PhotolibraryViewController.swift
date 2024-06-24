@@ -151,46 +151,43 @@ class PhotolibraryViewController: UIViewController {
     func loadimages() {
         
         let dispatchGroup = DispatchGroup()
-        var newLoadedPhotos: [downloadedphotos] = []
-        
-        for photo in fetchphotodata {
-            guard let urlFromImage = photo.download_url, let url = URL(string: urlFromImage) else {
-                continue
-            }
-            
-            dispatchGroup.enter()
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                    let id = photo.id
-                    let author = photo.author
-                    let height = photo.height
-                    let width = photo.width
-                    let downloadedPhoto = downloadedphotos(id: id, author: author, width: width, height: height, imagetoshow: image)
-                    
-                    DispatchQueue.main.async {
-                        newLoadedPhotos.append(downloadedPhoto)
-                        dispatchGroup.leave()
+                var newLoadedPhotos: [downloadedphotos] = []
+                
+                for photo in fetchphotodata {
+                    guard let urlFromImage = photo.download_url, let url = URL(string: urlFromImage) else {
+                        continue
                     }
-                } else {
-                    dispatchGroup.leave()
+                    
+                    dispatchGroup.enter()
+                    DispatchQueue.global().async {
+                        if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                            let downloadedPhoto = downloadedphotos(id: photo.id, author: photo.author, width: photo.width, height: photo.height, imagetoshow: image)
+                            
+                            DispatchQueue.main.async {
+                                newLoadedPhotos.append(downloadedPhoto)
+                                dispatchGroup.leave()
+                            }
+                        } else {
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+                
+                dispatchGroup.notify(queue: .main) {
+                    let uniqueNewPhotos = newLoadedPhotos.filter { newPhoto in
+                        !self.loadedphotos.contains(where: { $0.id == newPhoto.id })
+                    }
+                    self.loadedphotos.append(contentsOf: uniqueNewPhotos)
+                    self.loadedphotos.sort { Int($0.id ?? "0") ?? 0 < Int($1.id ?? "0") ?? 0 }
+                    self.librarytable.reloadData()
+                    self.activityindicator.stopAnimating()
+                    self.loadmorebutton?.isHidden = false
+                    self.loadmorectivityindicator.isHidden = false
+                   // completion()
                 }
             }
-        }
         
-        dispatchGroup.notify(queue: .main) {
-            if !newLoadedPhotos.isEmpty {
-                self.loadedphotos.append(contentsOf: newLoadedPhotos)
-                self.loadedphotos.sort { Int($0.id ?? "0") ?? 0 < Int($1.id ?? "0") ?? 0 }
-                self.activityindicator.stopAnimating()
-                self.loadmorectivityindicator.stopAnimating()
-                self.loadmorebutton?.isHidden = false
-                self.librarytable.reloadData()
-            }
-            
-        }
-        
-        
-    }
+    
     
     
 }
