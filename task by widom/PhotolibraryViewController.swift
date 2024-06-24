@@ -182,7 +182,7 @@ class PhotolibraryViewController: UIViewController {
                     self.librarytable.reloadData()
                     self.activityindicator.stopAnimating()
                     self.loadmorebutton?.isHidden = false
-                    self.loadmorectivityindicator.isHidden = false
+                    self.loadmorectivityindicator.stopAnimating()
                    // completion()
                 }
             }
