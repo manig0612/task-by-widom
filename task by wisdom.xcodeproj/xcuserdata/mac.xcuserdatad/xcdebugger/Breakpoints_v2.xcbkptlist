@@ -16,7 +16,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "109"
             endingLineNumber = "109"
-            landmarkName = "FetchPhotos(page:completion:)"
+            landmarkName = "FetchPhotos(page:limit:completion:)"
             landmarkType = "7">
             <Locations>
                <Location

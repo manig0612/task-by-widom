@@ -163,7 +163,9 @@ class PhotolibraryViewController: UIViewController {
                 if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
                     let id = photo.id
                     let author = photo.author
-                    let downloadedPhoto = downloadedphotos(id: id, author: author, imagetoshow: image)
+                    let height = photo.height
+                    let width = photo.width
+                    let downloadedPhoto = downloadedphotos(id: id, author: author, width: width, height: height, imagetoshow: image)
                     
                     DispatchQueue.main.async {
                         newLoadedPhotos.append(downloadedPhoto)
